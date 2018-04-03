@@ -3,7 +3,7 @@
 %表格模式设置左对齐:
 %第一行用\multicolumn{1}{|c|}{文本内容}
 
-本章详细分析了卷积神经网络前向推断过程中所使用基本算子，并对每一个基本算子分别给出了基于手机CPU和手机GPU的实现方式。基于这些基本算子，本章实现了卷积神经网络所需的层结构。然后，利用这些层结构和已训练好的CNN模型权重在手机平台上重构了LeNet和AlexNet，并分析比较了CPU版本和GPU版本两种实现方式的能效。最后，本章描述了基于“剪枝-重训”的权重压缩方法，并使用该方法对卷积神经网络中占存储量主要部分的全连接层权重进行了压缩。对于压缩后的CNN模型，本章进一步使用稀疏矩阵向量乘（SpMV）代替密集矩阵的内积运算，并分别给出了SpMV的CPU和GPU实现方式。
+本章详细分析了卷积神经网络前向推断过程中所使用基本算子，并对每一个基本算子分别给出了基于手机CPU和手机GPU的实现方式。基于这些基本算子，本章实现了卷积神经网络所需的层结构。然后，利用这些层结构和已训练好的CNN模型权重在手机平台上重构了LeNet-5和AlexNet，并分析比较了CPU版本和GPU版本两种实现方式的能效。最后，本章描述了基于“剪枝-重训”的权重压缩方法，并使用该方法对卷积神经网络中占存储量主要部分的全连接层权重进行了压缩。对于压缩后的CNN模型，本章进一步使用稀疏矩阵向量乘（SpMV）代替密集矩阵的内积运算，并分别给出了SpMV的CPU和GPU实现方式。
 
 \section{CNN前向推断基本算子的分解与实现}
 \label{chapter:chapter3-1}
@@ -328,11 +328,11 @@
 
 \section{基于手机GPU加速的CNN前向推断}
 
-第\ref{chapter:chapter3-1}章节对卷积神经网络前向推断过程中所涉及的基本算子进行了分解与实现，而本章节即利用这些基本算子分别实现了基于手机GPU和手机CPU的CNN前向推断过程所需层结构，包括卷积层、池化层、全连接层和激活层等。利用所实现的各种层结构，本章节于手机端重构了LeNet和AlexNet模型，并分析比较了两个模型在手机GPU和手机CPU上运行时的能效特征。
+第\ref{chapter:chapter3-1}章节对卷积神经网络前向推断过程中所涉及的基本算子进行了分解与实现，而本章节即利用这些基本算子分别实现了基于手机GPU和手机CPU的CNN前向推断过程所需层结构，包括卷积层、池化层、全连接层和激活层等。利用所实现的各种层结构，本章节于手机端重构了LeNet-5和AlexNet模型，并分析比较了两个模型在手机GPU和手机CPU上运行时的能效特征。
 
 \subsection{预训练CNN模型权重参数解析}
 \label{chapter:chapter3-2-1}
-解析预训练CNN模型权重参数是在手机端重构卷积神经网络前向推断过程的首要条件，本文针对Caffe、YOLO以及Tensorflow等深度学习框架所训练的CNN模型给出了权重解析的python脚本。该脚本可以提取预训练CNN模型的每层权重参数（权值矩阵和偏置矩阵等），并将这些权重参数分层保存为二进制npy文件格式，整个流程如图\ref{figure:figure14}所示。
+解析预训练CNN模型权重参数是在手机端重构卷积神经网络前向推断过程的首要条件，本文针对Caffe、Tensorflow等深度学习框架所训练的CNN模型给出了权重解析的python脚本。该脚本可以提取预训练CNN模型的每层权重参数（权值矩阵和偏置矩阵等），并将这些权重参数分层保存为二进制npy文件格式，整个流程如图\ref{figure:figure14}所示。
 
 \begin{figure}[htbp]
     \begin{center}
@@ -341,21 +341,27 @@
     \caption{CNN模型权重参数解析流程概览}\label{figure:figure14}
 \end{figure}
 
-\subsection{LeNet模型于手机端的重构}
+\subsection{LeNet-5模型于手机端的重构}
 
-LeNet是由卷积神经网络之父Yan LeCun提出的，其主要用来进行手写字符的识别与分类。
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1.0\textwidth]{figures/lenet.pdf}
+    \caption{LeNet-5模型结构示意图 \cite{lecun1998gradient}}\label{figure:figure15}
+\end{figure}
+
+LeNet-5是由卷积神经网络之父Yan LeCun提出的，其主要用来进行手写字符的识别与分类。原始的LeNet-5模型主要由2个卷积层、2个池化层、1个全连接层以及1个高斯连接层组成，如图\ref{figure:figure15}所示。本文所采用的LeNet-5模型将最后一层高斯连接层替换为了全连接层，且在MNIST数据集\cite{lecun.com}上的预测精度可达99.1\%。表\ref{table:table5}描述了本文所采用的LeNet-5模型结构中卷积层和全连接层的参数信息。
 
 \begin{table}[htbp]
   \centering
-  \caption{LeNet模型结构中的卷积层和全连接层}
+  \caption{LeNet-5模型结构中的卷积层和全连接层}
   \label{table:table5}
 \resizebox{1.0\textwidth}{!}{
   \begin{tabular}{ccc}
     \toprule
       名称 & 类型 & 描述\\
     \midrule
-      conv1 & 卷积层 & 输入：1x28x28，卷积核：20x1x5x5，步长：1，padding：0，输出：20x24x24 \\
-      conv2 & 卷积层 & 输入：20x12x12，卷积核：50x20x5x5，步长：1，padding：0，输出：50x8x8\\
+      conv1 & 卷积层 & 输入：$1\times28\times28$，卷积核：$20\times1\times5\times5$，步长：1，padding：0，输出：$20\times24\times24$ \\
+      conv2 & 卷积层 & 输入：$20\times12\times12$，卷积核：$50\times20\times5\times5$，步长：1，padding：0，输出：$50\times8\times8$\\
       ip1 & 全连接层 & 输入：800， 输出：500 \\
       ip2 & 全连接层 & 输入：500， 输出：10 \\
     \bottomrule
@@ -363,8 +369,98 @@ LeNet是由卷积神经网络之父Yan LeCun提出的，其主要用来进行手
 }
 \end{table}
 
+利用第\ref{chapter:chapter3-2-1}章节的权重解析脚本，可获取到LeNet-5模型各层的权重参数矩阵。基于这些权值矩阵，本文分别于手机GPU和手机CPU上重构了LeNet-5模型，图\ref{figure:figure16}显示了LeNet-5模型在ODROID-XU3平台上进行单张图片前向推断所需的执行时间、能耗和功耗。
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[height=0.4\textwidth]{figures/lenet_energy.pdf}
+    \caption{ODROID-XU3平台上LeNet-5单张图片推断执行时间、能耗和功耗对比}\label{figure:figure16}
+\end{figure}
+
+由图\ref{figure:figure16}可知，LeNet-5模型在手机GPU上进行前向推断的执行速度是在手机CPU上的5倍，并且可以节省62倍的能耗。根据表\ref{table:table6}显示的LeNet-5模型分别于手机CPU和手机GPU上运行时EDP值可知，使用手机GPU进行LeNet-5的前向推断可以将能效提升300倍以上。
+
+对比图\ref{figure:figure16}和图\ref{figure:figure11}中手机GPU功耗值，可以发现LeNet-5模型于手机GPU进行前向推断时并未充分利用GPU的计算性能。这是因为使用手机GPU进行\texttt{im2col}运算时其功耗为1.511瓦，而使用手机GPU进行LeNet-5前向推断时其功耗仅为0.2083瓦。这可能是因为LeNet-5模型太小，未能充分发挥GPU的并行计算能力。为了验证这一猜想，本文进一步于手机端重构了AlexNet模型。
+
+\begin{table}[htbp]
+  \centering
+  \caption{LeNet-5分别于手机CPU和GPU上运行时能效对比}
+  \label{table:table6}
+  \begin{tabular}{cc}
+    \toprule
+      运行处理器 & EDP(Joules*seconds) \\
+    \midrule
+      CPU & 0.1088 \\
+      GPU & 0.00033 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 \subsection{AlexNet模型于手机端的重构}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1.0\textwidth]{figures/alexnet.pdf}
+    \caption{AlexNet模型结构示意图 \cite{krizhevsky2012imagenet}}\label{figure:figure17}
+\end{figure}
+
+AlexNet模型在2012年ImageNet大赛上一举夺冠开启了深度学习的新时代，它也为后续的CNN模型研究奠定了基础，其模型结构如图\ref{figure:figure17}所示。AlexNet模型主要由5个卷积层、3个池化层和3个全连接层组成。其中，AlexNet模型的所有权重均包含在卷积层和全连接层，它们的参数信息见表\ref{table:table6}。
+
+\begin{table}[htbp]
+  \centering
+  \caption{AlexNet模型结构中的卷积层和全连接层}
+  \label{table:table7}
+\resizebox{1.0\textwidth}{!}{
+  \begin{tabular}{ccc}
+    \toprule
+      名称 & 类型 & 描述\\
+    \midrule
+      conv1 & 卷积层 & 输入：$3\times227\times227$，卷积核：$96\times3\times11\times11$，步长：4，padding：0，输出：$96\times55\times55$ \\
+      conv2 & 卷积层 & 输入：$96\times27\times27$，卷积核：$256\times96\times5\times5$，步长：1，padding：2，输出：$256\times27\times27$\\
+      conv3 & 卷积层 & 输入：$256\times13\times13$，卷积核：$384\times256\times3\times3$，步长：1，padding：1，输出：$384\times13\times13$ \\
+      conv4 & 卷积层 & 输入：$384\times13\times13$，卷积核：$384\times384\times3\times3$，步长：1，padding：1，输出：$384\times13\times13$\\
+      conv5 & 卷积层 & 输入：$384\times13\times13$，卷积核：$256\times384\times3\times3$，步长：1，padding：1，输出：$256\times13\times13$\\
+      fc6 & 全连接层 & 输入：9216， 输出：4096 \\
+      fc7 & 全连接层 & 输入：4096， 输出：4096 \\
+      fc8 & 全连接层 & 输入：4096， 输出：1000 \\
+    \bottomrule
+  \end{tabular}
+}
+\end{table}
+
+图\ref{figure:figure18}显示了AlexNet模型分别于ODROID-XU3平台CPU和GPU上进行单张图片推断的执行时间、能耗和功耗对比。与图\ref{figure:figure16}中LeNet-5模型的推断运行相比，AlexNet模型于手机GPU上执行前向推断相较于手机CPU而言加速比可达15。从功耗角度分析可知，AlexNet模型于手机GPU上执行前向推断时手机GPU的功耗（1.31瓦）接近其峰值，这也说明了使用手机GPU加速AlexNet这种较大的CNN模型效果更加明显。虽然AlexNet模型于手机GPU上执行前向推断时的功耗比LeNet-5模型使用GPU执行时的功耗增加了1瓦，但是其仍然只是使用CPU执行AlexNet模型时的一半，也因此其能耗只达到了使用CPU执行AlexNet模型时的1/30。由表\ref{table:table8}显示的EDP值可得使用GPU与CPU分别执行AlexNet模型的能效加速比为472，这充分显示了手机GPU在进行卷积神经网络计算时的优势。
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[height=0.45\textwidth]{figures/alexnet_energy.pdf}
+    \caption{ODROID-XU3平台上AlexNet单张图片推断执行时间、能耗和功耗对比}\label{figure:figure18}
+\end{figure}
+
+\begin{table}[htbp]
+  \centering
+  \caption{AlexNet分别于手机CPU和GPU上运行时能效对比}
+  \label{table:table8}
+  \begin{tabular}{cc}
+    \toprule
+      运行处理器 & EDP(Joules*seconds) \\
+    \midrule
+      CPU & 28268.24 \\
+      GPU & 59.84 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+为了验证本文所开发的CNN运行时库的可移植性与兼容性，本文在Open-Q™ 820开发套件上也重构了AlexNet模型。图\ref{figure:figure19}显示了AlexNet模型分别于ODROID-XU3平台和Open-Q™ 820开发套件上进行单张图片推断的CPU执行时间和GPU执行时间。对比分析两个平台上使用CPU进行AlexNet前向推断的执行时间可知，骁龙820的CPU相较于三星Exynos5422的CPU在计算性能上提升了4倍多。对于使用GPU进行CNN前向推断，骁龙820的处理性能更是提升了近7倍，这使得于手机端完成一次完整的AlexNet前向推断仅需要580毫秒。可以看出，手机SoC芯片中的CPU和GPU处理性能都在日趋强大，这为深度学习模型（如卷积神经网络）于手机本地完成离线推断奠定了基础。
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[height=0.4\textwidth]{figures/open_q.pdf}
+    \caption{不同平台上AlexNet单张图片推断执行时间对比}\label{figure:figure19}
+\end{figure}
+
+\section{基于“剪枝-重训”的层压缩优化}
+
+整个算法的流程很简单：从网络的最后一层开始，根据一定规则对该层进行剪枝，然后retrain网络，循环上述过程。
+
 
 
 
