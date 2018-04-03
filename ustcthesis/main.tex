@@ -1,0 +1,72 @@
+%!TEX encoding = UTF-8 Unicode
+%!TEX program = xelatex
+
+\documentclass[master]{ustcthesis}
+% bachelor|master|doctor [professional] [english] [pdf] [authoryear|numebers]
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{subfigure}
+\usepackage{setspace}
+\usepackage{caption}
+\usepackage{ustcextra}
+\graphicspath{{figures/}}
+
+\title{Android平台的CNN模型\\能效优化问题研究}
+\author{王震}
+\major{计算机系统结构}
+\supervisor{周学海\ 教授}
+\cosupervisor{李曦\ 副教授}
+% \date{二〇一七年五月一日}    % 注释掉则为今日
+% \professionaltype{专业学位类型}
+% \secrettext{机密\quad 小于等于20年}    % 内部|秘密|机密，注释本行则不保密
+
+\entitle{Research about Energy Efficiency Optimization of CNN Models on Android Platform}
+\enauthor{Zhen Wang}
+\enmajor{Computer Architecture}
+\ensupervisor{Prof. Xuehai Zhou}
+\encosupervisor{Assoc. Prof. Xi Li}
+% \endate{May 1, 2017}    % today if commented
+% \enprofessionaltype{Professional degree type}
+% \ensecrettext{Confidential\quad Less than or equal to 20 years}
+% Internal|Secret|Confidential
+
+\begin{document}
+
+\maketitle
+
+% 本科论文:
+%   frontmatter: 致谢、目录、中文摘要、英文摘要
+%   mainmatter: 正文章节、参考文献
+%   appendix: 附录
+%
+% 硕博论文:
+%   frontmatter: 中文摘要、英文摘要、目录、符号说明
+%   mainmatter: 正文、参考文献
+%   appendix: 附录
+%   backmatter: 致谢、发表论文
+
+\frontmatter
+\input{chapters/abstract}
+\tableofcontents
+\listoffigures
+\listoftables
+\listofalgorithms
+% \input{chapters/0.notation}
+
+\mainmatter
+\input{chapters/intro}
+\input{chapters/tech}
+\input{chapters/mem}
+\input{chapters/compute}
+\input{chapters/system}
+\input{chapters/conclusion}
+\bibliography{bib/ustc}
+
+%\appendix
+%\chapter{论文规范}
+
+\backmatter
+\input{chapters/acknowledgements}
+\input{chapters/publications}
+
+\end{document}
