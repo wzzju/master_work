@@ -1,5 +1,5 @@
 \chapter{基于手机GPU加速和离线层压缩的能效优化}
-
+\label{chapter:chapter3}
 %表格模式设置左对齐:
 %第一行用\multicolumn{1}{|c|}{文本内容}
 
@@ -354,7 +354,7 @@
 第\ref{chapter:chapter3-1}章节对卷积神经网络前向推断过程中所涉及的基本算子进行了分解与实现，而本章节即利用这些基本算子分别实现了基于手机GPU和CPU的CNN前向推断过程所需层结构，包括卷积层、池化层、全连接层和激活层等。利用所实现的各种层结构，本章节于手机端重构了LeNet-5和AlexNet模型，并分析比较了两个模型在手机GPU和CPU上运行时的能效特征。
 
 \subsection{预训练CNN模型权重参数解析}
-\label{chapter:chapter3-2-1}
+\label{chapter:chapter321}
 
 \begin{figure}[htbp]
     \begin{center}
@@ -394,7 +394,7 @@ LeNet-5是由卷积神经网络之父Yan LeCun提出的，其主要用来进行�
 \end{table}
 \vspace{-0.5em}
 
-利用第\ref{chapter:chapter3-2-1}章节的权重解析脚本，可获取到LeNet-5模型各层的权重参数矩阵。基于这些权值矩阵，本文分别于手机GPU和CPU上重构了LeNet-5模型，图\ref{figure:figure16}显示了LeNet-5模型在ODROID-XU3平台上进行单张图片前向推断所需的运行时间、能耗和功耗。
+利用第\ref{chapter:chapter321}章节的权重解析脚本，可获取到LeNet-5模型各层的权重参数矩阵。基于这些权值矩阵，本文分别于手机GPU和CPU上重构了LeNet-5模型，图\ref{figure:figure16}显示了LeNet-5模型在ODROID-XU3平台上进行单张图片前向推断所需的运行时间、能耗和功耗。
 
 \begin{figure}[htbp]
     \centering

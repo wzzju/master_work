@@ -186,6 +186,7 @@ OpenCL应用针对多种设备只需编写一次，而且这些设备不需要�
 本文其他章节涉及到的实验都是基于ODROID-XU3\cite{hardkernel.com}和Open-Q™ 820开发套件\cite{intrinsyc.com}两个平台进行的，故而有必要在此处对它们进行详细介绍。
 
 \subsection{ODROID-XU3}
+\label{chapter:chapter2-5-1}
 图\ref{figure:figureodroid}所示即为Hardkernel公司生产的ODROID-XU3开发平台，其采用三星\texttt{Exynos5422}作为SoC芯片（内部集成2GB内存和\texttt{ARM Mali-T628 MP6} GPU）。实验中，ODROID-XU3运行的操作系统为Android 5.1.1版本（内核版本号为3.10.9）。\texttt{Exynos5422}的处理器使用了ARM的big.LITTLE技术，并由四个\texttt{ARM Cortex-A15}大核（频率最高可达2.0GHz）和四个\texttt{ARM Cortex-A7}小核（频率最高可达1.4GHz）组成。由于使用了\texttt{big.LITTLE™ HMP}解决方案，\texttt{Exynos5422}最多可以使用8个核去处理计算密集型的任务。\texttt{ARM Mali-T628 MP6} GPU拥有两个GPU簇，即GPU簇0包含4个\texttt{ARM Mali-T628}核而GPU簇1包含2个\texttt{ARM Mali-T628}核\cite{lokhmotov2015gemmbench}。故而，对于ODROID-XU3来说，所有可获得的本地设备处理器包括一个CPU设备和两个GPU设备\label{chapter:chapter1-1}。
 
 \begin{figure}[htbp]
