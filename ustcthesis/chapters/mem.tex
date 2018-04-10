@@ -540,15 +540,15 @@ AlexNet模型在2012年ImageNet大赛上一举夺冠开启了深度学习的新�
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[height=0.4\textwidth]{figures/lenet_pruned_threshold.pdf}
+    \includegraphics[height=0.45\textwidth]{figures/lenet_pruned_threshold.pdf}
     \caption{LeNet-5模型精确度随全连接层权重连接保留率的变化曲线}\label{figure:figure21}
 \end{figure}
 
-使用图\ref{figure:figure20}所示的“剪枝-重训”流程对LeNet-5模型剪枝后，可以发现其推断精确度仍可高达99.05\%，这几乎没有导致精度上任何损失。剪枝后的模型经CSR格式进行存储后，模型大小仅为原始模型的15.65\%。在此需要说明，虽然全连接层ip1和ip2的权重参数分别减少了95\%和90\%，但是CSR存储格式需要存储稀疏矩阵中所有非零值元素的两类信息(元素值和其对应的列下标)，所以模型大小仅压缩到原始模型的15\%左右。由图\ref{figure:figure22}可以明显地看出，LeNet-5模型经剪枝后全连接层的权重只有很少一部分值为非零值，这说明剪枝操作确实将原有的稠密权重矩阵转换为了稀疏权重矩阵。
+使用图\ref{figure:figure20}所示的“剪枝-重训”流程对LeNet-5模型剪枝后，可以发现其推断精确度仍可高达99.05\%，这几乎没有导致精度上任何损失。剪枝后的模型经CSR格式进行存储后，模型大小仅为原始模型的15.65\%。在此需要说明，虽然全连接层ip1和ip2的权重参数分别减少了95\%和90\%，但是CSR存储格式需要存储稀疏矩阵中所有非零值元素的两类信息(元素值和其对应的列下标)，所以模型大小仅压缩到原始模型的15\%左右。由LeNet-5模型所有全连接层剪枝前后的权重分布对比图\ref{figure:figure22}可知，LeNet-5模型经剪枝后全连接层的权重只有很少一部分值为非零值，这说明剪枝操作确实将原有的稠密权重矩阵转换为了稀疏权重矩阵。
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[height=0.5\textwidth]{figures/lenet_pruned_weights.pdf}
+    \includegraphics[height=0.45\textwidth]{figures/lenet_pruned_weights.pdf}
     \caption{LeNet-5模型全连接层剪枝前后权重分布对比}\label{figure:figure22}
 \end{figure}
 
@@ -561,15 +561,15 @@ LeNet-5模型结构比较简单，因此其原始大小也仅1.7M，对其进行
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[height=0.5\textwidth]{figures/alexnet_pruned_threshold.pdf}
+    \includegraphics[height=0.45\textwidth]{figures/alexnet_pruned_threshold.pdf}
     \caption{AlexNet模型精确度随全连接层权重连接保留率的变化曲线}\label{figure:figure23}
 \end{figure}
 
-经多次“剪枝-重训”操作后，AlexNet模型的所有全连接层都仅保留了原有权重的15\%，而模型的top-1精确度变成了54.80\%，模型的精确度仅下降了0.98\%。因为实验中对每次剪枝后的模型仅仅重新训练了10000次，所以这可能造成了模型精确度0.98\%的损失。如果增加每次剪枝后模型的重新训练次数，模型的精确度损失就会减少。使用CSR格式对剪枝后的AlexNet模型进行存储，其模型大小约为85M，这比原始模型的250M减少了165M，仅占原始模型大小的34\%。从图\ref{figure:figure24}可以明显看出，经剪枝后，AlexNet模型的所有全连接层的权重值仅有很少一部分值不为0。
+经多次“剪枝-重训”操作后，AlexNet模型的所有全连接层都仅保留了原有权重的15\%，而模型的top-1精确度变成了54.80\%，模型的精确度仅下降了0.98\%。因为实验中对每次剪枝后的模型仅仅重新训练了10000次，所以这可能造成了模型精确度0.98\%的损失。如果增加每次剪枝后模型的重新训练次数，模型的精确度损失就会减少。使用CSR格式对剪枝后的AlexNet模型进行存储，其模型大小约为85M，这比原始模型的250M减少了165M，仅占原始模型大小的34\%。图\ref{figure:figure24}显示了AlexNet模型的各个全连接层剪枝前后权重分布对比。从分布图中可以明显看出，经剪枝后，AlexNet模型的所有全连接层的权重值仅有很少一部分值不为0。
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[height=0.5\textwidth]{figures/alexnet_pruned_weights.pdf}
+    \includegraphics[height=0.45\textwidth]{figures/alexnet_pruned_weights.pdf}
     \caption{AlexNet模型全连接层剪枝前后权重分布对比}\label{figure:figure24}
 \end{figure}
 
@@ -629,4 +629,4 @@ LeNet-5模型结构比较简单，因此其原始大小也仅1.7M，对其进行
 
 本章主要介绍了基于手机GPU编程和模型压缩的卷积神经网络前向推断过程的能效优化方法。3.1节对CNN模型前向推断过程中所使用的基本算子进行了分解与手机端的实现，并基于ODROID-XU3平台分析比较了各个基本算子在手机GPU和CPU上的运行时能效。3.2节使用已实现的各种基本算子在手机端重构了LeNet-5模型和AlexNet模型，并分析了两个模型于手机GPU和CPU上进行单张图片推断时的能效。3.3节介绍了“剪枝-重训”的模型压缩方法，并实现了对卷积神经网络全连接层权重的压缩。通过对LeNet-5和AlexNet两个模型的剪枝操作，本文验证了使用压缩方法提升CNN模型于手机端运行时能效的有效性。最后，基于压缩后的稀疏网络模型，本文使用稀疏矩阵向量乘操作(SpMV)代替全连接层的内积操作，进一步分析了压缩所带来的性能提升。截至本章，本文已经开发了一套可以分别于手机GPU和CPU上运行的CNN推断时库，该库还通过SpMV操作支持经“剪枝-重训”压缩处理的稀疏CNN模型。
 
-
+\cleardoublepage
