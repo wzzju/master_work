@@ -85,11 +85,11 @@ ODROID-XU3平台所配备的\texttt{Mali-T628 MP6} GPU支持六级调频，即GP
 \section{基于应用场景的系统层能效优化策略}
 \label{chapter5-3}
 
-经过第\ref{chapter5-2}章节的分析可知，针对基于CNN模型的生活日志型Android应用（如本文开发的智能监控系统APP），系统默认使用的调频策略会产生“乒乓效应”并造成额外的能耗开销，而将GPU频率固定在最大可达频率处性能更加且几乎不影响CNN推断的能效。因此，本文提出基于应用场景的调频策略，其可自动感知系统上层运行的应用类别。具体来说，若该策略感知到系统上层运行的是基于CNN模型的生活日志型Android应用，其会将GPU频率调至最高点并保持不变；若该策略感知到系统上层运行的是传统型应用，其会使用GPU原默认的调频策略。基于应用场景的调频策略主要根据系统上层应用的负载特征对应用进行分类，并在分类过程中使用动态时间规整（DTW\cite{muller2007dynamic}）计算上层应用所属的类别。
+经过第\ref{chapter5-2}章节的分析可知，针对基于CNN模型的生活日志型Android应用（如本文开发的智能监控系统APP），系统默认使用的调频策略会产生“乒乓效应”并造成额外的能耗开销，而将GPU频率固定在最大可达频率处CNN推断性能更高且几乎不影响推断的能效。因此，本文提出基于应用场景的调频策略，其可自动感知系统上层运行的应用类别。具体来说，若该策略感知到系统上层运行的是基于CNN模型的生活日志型Android应用，其会将GPU频率调至最高点并保持不变；若该策略感知到系统上层运行的是传统型应用，其会使用GPU原默认的调频策略。基于应用场景的调频策略主要根据系统上层应用的负载特征对应用进行分类，并在分类过程中使用动态时间规整计算上层应用所属的类别。
 
 \subsection{动态时间规整}
 \label{chapter5-3-1}
-在时间序列分析领域，DTW主要用于衡量两段时间序列的相似度，并且这两段时间序列的变化速度可以是不一致的。例如，语音识别中不同人的语速不同，同一个字母的发音序列会有所差别，但使用DTW就可以有效的区分这种同字母不同语速下的语音序列。DTW主要通过将两段时间序列进行延伸和缩短来计算它们之间的相似性。如图\ref{figure:figure39}所示，序列X和序列Y表示两段时间序列，双箭头指向处代表两段序列间的对齐点。
+在时间序列分析领域，动态时间规整（Dynamic Time Warping，DTW\cite{muller2007dynamic}）主要用于衡量两段时间序列的相似度，并且这两段时间序列的变化速度可以是不一致的。例如，语音识别中不同人的语速不同，同一个字母的发音序列会有所差别，但使用DTW就可以有效的区分这种同字母不同语速下的语音序列。动态时间规整主要通过将两段时间序列进行延伸和缩短来计算它们之间的相似性。如图\ref{figure:figure39}所示，序列X和序列Y表示两段时间序列，双箭头指向处代表两段序列间的对齐点。
 
 \begin{figure}[htbp]
     \centering
@@ -120,24 +120,78 @@ ODROID-XU3平台所配备的\texttt{Mali-T628 MP6} GPU支持六级调频，即GP
 
 \subsection{基于应用场景的调频策略}
 
+如前所述，手机端内嵌CNN模型的生活日志型应用主要使用GPU执行推断过程，所以本文针对GPU设备处理器提出了基于应用场景的调频策略。算法\ref{algo:algorithm10}给出了本文所提策略的伪代码，其核心思想描述如下：
+\begin{enumerate}
+  \item 提取基于CNN模型生活日志型应用的特征负载时间序列$X(x_0, x_1, ... , x_ {N-1})$作为模板序列。
+  \item 确定可对应用场景进行分类的DTW阈值$DTW_{TH}$，其可用于识别系统上层所运行应用是否为基于CNN模型的生活日志型应用。
+  \item 每次进入调频函数，在长度为M的数组load\_infos中记录当前获得的负载值，并使计数器值加1。注意，M取值应使数组load\_infos能够覆盖上层应用的负载特征，其可由用户输入也可取一个较大值。
+  \item 当计数器值等于M-1时，计算已获取的M个历史负载序列load\_infos和模板序列X之间的DTW值dtw\_dist。
+  \item 当dtw\_dist小于$DTW_{TH}$时，说明系统上层所运行应用为基于CNN模型的生活日志型应用，此时应将GPU频率设置到最高(已最高则不变)；反之，说明系统上层所运行应用为非基于CNN模型的其他应用，此时应采用GPU默认的调频策略。
+\end{enumerate}
+
 \begin{algorithm}[htbp]
   \small
   \SetAlgoLined
-    \begin{spacing}{0.9}
-    \KwIn{所选设备处理器组合中所有处理器的相对性能集$Perf$。}
-    \KwOut{所选组合中处理器所分配计算任务比例集$R$。}
-    \For{$perf_{i}$ \textbf{in} $Perf$} {
-        计算处理器$process_i$所分配任务比例：
-        $$r_i=\frac{perf_{ri}}{\sum_{perf \in Perf}perf}$$
-        将$r_i$添加到数组$R$中\;
+    \KwData{基于CNN模型的生活日志型应用负载模板序列$X(x_0, x_1, ... , x_ {N-1})$\;应用场景分类DTW阈值$DTW_{TH}$。}
+    令函数dtw(X,Y)的功能为计算两段时间序列X和Y间的DTW值\;
+    \textbf{初始化}count = 0;//计数已获取的负载值数量，仅全局初始化一次 \\
+    \textbf{初始化}load\_infos[M] = {0};//存储最近获取的M个负载值，仅全局初始化一次 \\
+    \textbf{初始化}dtw\_dist = 2$DTW_{TH}$; //仅全局初始化一次 \\
+    \eIf{$count < M-1$}{
+        load\_infos[count] = 当前GPU利用率（即上层应用负载）\;
+        count++\;
+    }{
+        load\_infos[count] = 当前GPU利用率（即上层应用负载）\;
+        count = 0\;
+        dtw\_dist = dtw(X,load\_infos)\;
     }
-    \textbf{return} $R$\;
-   \end{spacing}
+
+    \eIf{$dtw\_dist < DTW_{TH}$}{
+        将GPU频率调至最高一级，已最高则不变;//基于CNN模型的生活日志型应用 \\
+    }{
+        使用默认调频策略; //非基于CNN模型的其他应用
+    }
   \caption{基于应用场景的调频策略}
   \label{algo:algorithm10}
 \end{algorithm}
 
-\section{本章小结}
+\section{实验验证}
 
+本文利用ODROID-XU3平台实现了基于应用场景的调频策略，并使用所开发的智能监控系统Android应用对所提调频策略的有效性进行了验证。
+
+根据图\ref{figure:figure37}显示的智能监控系统Android应用的负载（GPU利用率）曲线可知，包含完整CNN推断的负载序列时间长度小于2秒。因此，本文使用时间长度约为4秒的负载序列作为基于CNN模型的生活日志型应用负载模板序列，该序列总共包括40个负载值。为了确定可对不同应用场景进行分类的DTW阈值，本文分别考察了包括CNN推断在内的手机系统可能存在的几个应用场景下应用负载序列与模板序列间的DTW值，结果如图\ref{figure:figure41}所示。根据图\ref{figure:figure41}显示的结果可知，当DTW阈值取480时，基于CNN模型的生活日志型应用和非基于CNN模型的其他应用可以被很好地区分开来。实验中，针对智能监控系统Android应用，调频策略中的M参数只要取大于20的数字即可覆盖监控系统APP的负载特征。
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1.0\textwidth]{figures/system_dtw.pdf}
+    \caption{应用场景分类DTW阈值的确定}\label{figure:figure41}
+\end{figure}
+
+图\ref{figure:figure42}显示了基于应用场景的调频策略运行效果。由GPU的频率变化曲线可以看出，在手机系统处于日常操作（如查看邮件、联系人等）、3D游戏、2D游戏等应用场景下时，系统GPU功耗管理器使用的均为默认策略，而一旦系统检测到上层运行的应用为基于CNN模型的生活日志型应用时，很快会将GPU频率调至最高点并保持运行在最高频率。
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1.0\textwidth]{figures/system_governor.pdf}
+    \caption{基于应用场景的调频策略运行效果}\label{figure:figure42}
+\end{figure}
+
+为了分析基于应用场景的调频策略对系统功耗的影响，本文比较了分别于所提调频策略和默认调频策略下运行CNN推断时系统CPU功耗的变化。之所以仅比较CPU功耗，是因为系统功耗管理器都是运行在CPU上的。由表\ref{table:table12}可以看出，在默认调频策略和本文所提调频策略下，运行CNN推断时CPU的功耗分别为0.71W和0.72W。由此得出结论：在功耗测量误差范围内，基于应用场景的调频策略对系统功耗的影响可以忽略不计。
+
+\begin{table}[htbp]
+  \centering
+  \caption{CNN推断过程中不同调频策略下CPU的功耗}
+  \label{table:table12}
+  \begin{tabular}{cc}
+    \toprule
+      策略 & CPU功耗(W) \\
+    \midrule
+      默认调频策略 & 0.71 \\
+      基于应用场景的调频策略 & 0.72 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{本章小结}
+本章利用前述章节所实现的CNN推断时库开发了一款智能监控系统Android应用，并针对该应用详细分析了其在系统层所表现的负载特征。通过对比分析智能监控系统应用分别于GPU默认调频策略和固定频率策略下运行时的性能和能效，本文发现系统默认使用的调频策略会产生“乒乓效应”并造成额外的能耗开销，而将GPU频率固定在最大可达频率处CNN推断性能更高且几乎不影响推断的能效。因此，本的最后提出了一种基于应用场景的调频策略，其可自动感知系统上层运行的应用是否为基于CNN模型的生活日志型应用，并根据检测结果及时改变调频行为。
 
 \cleardoublepage 
