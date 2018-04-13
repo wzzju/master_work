@@ -402,7 +402,7 @@ LeNet-5是由卷积神经网络之父Yan LeCun提出的，其主要用来进行�
     \caption{LeNet-5单张图片推断运行时间、能耗和功耗对比}\label{figure:figure16}
 \end{figure}
 
-由图\ref{figure:figure16}可知，LeNet-5模型在手机GPU上进行前向推断的执行速度是在手机CPU上的11倍以上，并且可以节省120多倍的能耗。根据表\ref{table:table6}显示的LeNet-5模型分别于手机GPU和CPU上运行时EDP值可知，使用手机GPU进行LeNet-5的前向推断可以将能效提升1350倍以上。
+由图\ref{figure:figure16}可知，LeNet-5模型在手机GPU上进行前向推断的执行速度是在手机CPU上的11倍以上，并且可以节省120多倍的能耗。根据表\ref{table:table6}显示的LeNet-5模型分别于手机GPU和CPU上运行时EDP值可知，使用手机GPU进行LeNet-5的前向推断可以将能效提升1400倍左右。
 
 \begin{table}[htbp]
   \centering
@@ -452,7 +452,7 @@ AlexNet模型在2012年ImageNet大赛上一举夺冠开启了深度学习的新�
 }
 \end{table}
 
-图\ref{figure:figure18}显示了AlexNet模型分别于ODROID-XU3平台CPU和GPU上进行单张图片推断的运行时间、能耗和功耗对比。与图\ref{figure:figure16}中LeNet-5模型的推断运行相比，AlexNet模型于手机GPU上执行前向推断相较于手机CPU而言加速比可达15。从功耗角度分析可知，AlexNet模型于手机GPU上执行前向推断时手机GPU的功耗（1.31瓦）接近其峰值，这也说明了使用手机GPU加速AlexNet这种较大的CNN模型效果更加明显。虽然AlexNet模型于手机GPU上执行前向推断时的功耗比LeNet-5模型使用GPU执行时的功耗增加了1瓦，但是其仍然只是使用CPU执行AlexNet模型时的一半，也因此其能耗只达到了使用CPU执行AlexNet模型时的1/30。由表\ref{table:table8}显示的EDP值可得使用GPU与CPU分别执行AlexNet模型的能效加速比为472，这充分显示了手机GPU在进行卷积神经网络计算时的优势。
+图\ref{figure:figure18}显示了AlexNet模型分别于ODROID-XU3平台CPU和GPU上进行单张图片推断的运行时间、能耗和功耗对比。与图\ref{figure:figure16}中LeNet-5模型的推断运行相比，AlexNet模型于手机GPU上执行前向推断相较于手机CPU而言性能加速比可达15。从功耗角度分析可知，AlexNet模型于手机GPU上执行前向推断时手机GPU的功耗（1.31瓦）接近其峰值，这也说明了使用手机GPU加速AlexNet这种较大的CNN模型效果更加明显。虽然AlexNet模型于手机GPU上执行前向推断时的功耗比LeNet-5模型使用GPU执行时的功耗增加了1瓦，但是其仍然只是使用CPU执行AlexNet模型时的一半，也因此其能耗只达到了使用CPU执行AlexNet模型时的1/30。由表\ref{table:table8}显示的EDP值可得使用GPU与CPU分别执行AlexNet模型的能效加速比为472，这充分显示了手机GPU在进行卷积神经网络计算时的优势。
 
 \begin{figure}[htbp]
 \begin{minipage}[b]{.6\linewidth}
