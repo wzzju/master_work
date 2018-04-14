@@ -251,7 +251,7 @@
     subsection = {
         format     = \sffamily\setfontsize{13\bp@},
         aftername  = .\hspace{\ccwd},
-        indent     = 2\ccwd,
+        % indent     = 2\ccwd,
         beforeskip = 12\bp@,
         afterskip  = 6\bp@,
     },

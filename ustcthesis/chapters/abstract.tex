@@ -1,23 +1,31 @@
 %!TEX root =  ../main.tex
 
 \begin{abstract}
-近年来，卷积神经网络（CNNs）因其具有高推断精度和强自适应性而被广泛应用于各种领域，例如：计算机视觉、语音识别等。移动手机当前已经成为了人们日常生活中的随身携带之物，其每天都产生着大量与人们相关的传感数据，因此许多工程项目也尝试着将卷积神经网络应用于移动平台来处理这些数据为人类提供更加智能的服务。然而，由于受到当前移动平台的资源限制（内存、计算能力、电池容量等），基于CNN模型的应用并没有在手机移动平台上成为主流。
+近年来，卷积神经网络（CNNs）因其具有高推断精度和强自适应性而被广泛应用于各种领域，例如：计算机视觉、语音识别等。另一方面，移动手机当前已经成为了人类日常生活中的随身携带之物，并且每天都产生着大量与人类相关的传感数据。为了让手机更加智能地服务于人类，许多工程项目也尝试着于手机端利用卷积神经网络处理这些传感数据。然而，由于受到当前移动平台的资源限制（内存、计算能力、电池容量等），基于CNN模型的应用并没有在手机移动平台上成为主流。
 
-目前，手机上基于CNN模型的应用绝大部分都是采用“客户端-服务器”模式。然而，这种模式不仅强依赖于网络性能而且会导致用户隐私泄露，所以于手机移动端直接进行卷积神经网络的高能效前向推断已然成为学术界和工业界所需共同面对的严峻挑战。本文直面这些挑战，采用一系列优化策略开发出一套可以高能效运行在Android平台的卷积神经网络推断时库，并将其运用在一个生活日志型应用中，以探索从系统层进一步降低该类场景应用的运行时功耗。论文的主要工作包括：
+目前，手机上基于CNN模型的应用绝大部分都是采用“客户端-服务器”模式。然而，这种模式不仅强依赖于网络性能（如网络稳定性等）而且会导致用户隐私泄露。因此，许多研究学者开始探索如何于手机移动端离线执行卷积神经网络的前向推断过程。针对这一研究课题，本文提出了一系列优化策略并开发出一套可高能效运行在Android平台的卷积神经网络推断时库。然后，本文利用该推断时库开发了一款生活日志型应用，借以探索从系统层进一步提高该类场景应用运行时能效的方法。论文的主要工作包括：
 
 \begin{enumerate}
-\item 基于OpenCL异构编程框架使用手机移动端GPU进行卷积神经网络的前向推断过程。解析Caffe、Tensorflow等深度学习框架训练出来的卷积神经网络模型权重，以便在手机端重构网络，并将卷积、内积等计算密集型的操作转移到手机GPU上进行。
-\item 通过对卷积神经网络全连接层权重的剪枝、重训操作，降低网络模型的存储占用。使用稀疏矩阵向量乘代替密集矩阵的内积操作，进一步降低卷积神经网络的前向推断时间。
-\item 为了能够充分利用当前以及未来移动设备SoC所提供的异构计算特征，本文提出了一种简单有效的方法，使得基于CNN模型的应用在运行时可以根据其所处运行环境中CPU、GPU等异构处理器的性能差异，自适应地调整CPU、GPU等所分配的计算任务量。
-\item 针对基于CNN的生活日志型应用，本文从系统层分析并建模预测这类应用的运行时负载，探索使用动态电压频率调节技术（DVFS）调整CPU/GPU的电压、频率来进一步降低基于CNN模型应用的运行时功耗之可能性。
+\item 利用预训练好的卷积神经网络模型权重于手机端重构网络，并使用OpenCL异构编程框架开发基于手机GPU加速的卷积神经网络推断时库。
+\item 基于“剪枝-重训”方法对卷积神经网络模型进行压缩，并在CNN推断时库中引入稀疏矩阵向量乘（SpMV）使能运行时库支持经压缩处理的稀疏CNN模型。
+\item 为了充分利用当前以及未来移动设备SoC所提供的异构计算能力，本文提出了一种使用手机平台异构设备处理器执行CNN推断的能效优化策略。该策略可根据目标平台所配备异构处理器间的能效差异自适应地寻找一个可高能效并行执行CNN推断的设备处理器组合。
+\item 针对基于CNN模型的生活日志型应用，本文详细分析了该类应用的运行时负载特征，并进一步探索在系统层使用动态电压频率调节技术（DVFS）提高该类应用性能或能效的方法。
 \end{enumerate}
 
-\keywords{能效；异构计算；权值压缩；卷积神经网络；移动平台}
+\keywords{卷积神经网络；移动平台；能效；异构计算；权值压缩；系统层优化}
 \end{abstract}
 
 \begin{enabstract}
-Convolutional Neural Networks (CNNs) have become more and more powerful in the computer vision domain, as they achieve the state-of-the-art accuracy. Despite this, it is generally difficult to apply CNNs on mobile platforms. Client-server paradigm is a straightforward way to deploy CNNs on mobile phones, but studies have shown that it suffers serious problems, such as privacy leaks. Recently, researchers focus on using heterogeneous local processors (e.g., GPUs, CPUs) to accelerate the inference of CNNs. Utilizing all local processors available can achieve the highest performance, but it might incur energy-inefficiency. Different from previous works, this paper concerns more about energy-efficiency of
-CNN-based mobile applications. We present an adaptive strategy, which is able to compute the energy-efficiency of all local processors, and further to obtain the energy-efficient device processor combination to perform CNN inference in parallel. The strategy is implemented on ODROID platform, where the evaluation results show that our proposed approach provides 3.67$\times$ higher energy-efficiency with only 9.7\% performance degradation on average compared with the greedy strategy which tries to use all local processors available.
+During the last few years, Convolutional Neural Networks (CNNs) have been widely used in various domains, such as computer vision and speech recognition, due to their high accuracy and strong self-adaptiveness. On the other hand, mobile phones have become necessary to human beings,and generate a large number of sensor data every day. In order to enable mobile phones to serve people more intelligently, many engineering projects also try to use CNNs to process these sensor data on the mobile phone. However, due to resource limitations (memory, computing power, battery capacity, etc.) of current mobile platforms, CNN-based mobile applications have not become mainstream on mobile platforms.
 
-\enkeywords{Energy-efficiency;Weights compression; Heterogeneous computing; CNNs; Mobile platform}
+Currently, most of CNN-based mobile applications use client-server computing paradigm. However, this paradigm not only strongly depends on network performance (such as network stability, etc.) but also leads to the privacy leakage. Therefore, many researchers began to explore how to perform the inference process of convolutional neural networks directly on the mobile platform. For this research topic, this paper proposes a series of optimization strategies and develops a CNN inference library, which can run on the Android platform in an energy-efficient way. Then, this paper uses the inference library to develop a life-logging application for exploring ways to further improve the energy-efficiency of such applications. In summary, main contributions of this paper include:
+
+\begin{enumerate}
+  \item Reconstructing the convolutional neural network on the mobile phone by the pre-trained weights. Using the mobile GPU acceleration by the OpenCL framework to develop a CNN inference library.
+  \item Using the pruning-retraining loop to compress the CNN models. Introducing Sparse Matrix-Vector Multiplication (SpMV) into the CNN inference library for enabling the runtime library to support the compressed sparse CNN model.
+  \item To take full advantage of the heterogeneous computing environment provided by current and future mobile device SoCs,  this paper proposes an optimization strategy which can use heterogeneous device processors to execute the CNN inference. Based on the energy-efficiency difference among the heterogeneous processors equipped on the target mobile platform, this strategy can adaptively search for an energy-efficient device processor combination to execute the CNN inference in parallel.
+  \item This paper analyzes the runtime load of the CNN-based life-logging application in detail and further explores the method of using Dynamic Voltage and Frequency Scaling (DVFS) to improve the CNN-based application performance or energy-efficiency in system level.
+\end{enumerate}
+
+\enkeywords{CNNs; Mobile platform; Energy-efficiency;Weights compression; Heterogeneous computing; System-level optimization}
 \end{enabstract}
