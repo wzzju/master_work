@@ -25,7 +25,7 @@ Lane等人\cite{lane2015can}设计了一个基于移动设备CPU和DSP的低功�
 \subsection{基于异构计算的优化}
 为了验证使用移动端GPU做异构计算所取得的性能，Lokhmotov等人\cite{lokhmotov2016optimizing}通过在三星 Chrome-book 2平台上进行预实验来刻画AlexNet的前向传输过程。最终，他们发现带有OpenBLAS支持的Caffe\cite{jia2014caffe}要比带有ViennaCL支持的Caffe快大约4倍，比带有clBLAS支持的Caffe快大约10倍。因此，当前移动端的GPU性能较差，并且，支持OpenCL的现有并行库并没有针对移动端进行优化。DeepX是Lane等人\cite{lane2016deepx}为在移动平台上运行深度学习模型设计并实现的一个软件加速器。DeepX利用一个基于网络计算（远程处理器）和本地异构处理器的混合体（包含CPUs，GPUs，LPUs等）来降低资源的开销，并通过两个推断时资源控制算法来提升性能，即：（1）运行时层压缩（Runtime Layer Compression , RLC）和（2）深度结构分解（Deep Architecture Decomposition , DAD）。然而，DeepX主要缺点有两点：（1）运行时层压缩不仅没有减少运行时内存的开销，还加重了处理器的计算量；（2）其运行时所使用的一些决策参数来源于离线计算好的值，不能适应运行环境的变化。Huynh等人\cite{huynh2016deepsense}设计了一个基于移动GPU的深度神经网络框架DeepSense。DeepSense是基于OpenCL的，故而可以在GPU上运行各种不同的CNN模型。然而，其计算密集型的操作（如，卷积运算）主要运行在GPU上，没有充分利用CPU的多核处理能力。文献\cite{latifi2016cnndroid}呈现了一个基于GPU加速的库（CNNdroid），其主要使用了Android官方的高性能计算框架RenderScript来加速已训练CNN模型的推断过程。然而，其并没有对一些较大的模型做压缩处理，使得一些大模型不能正常运行。
 \subsection{其他优化方法}
-除了上述三类研究外，还有一些其他的相关研究。文献\cite{lane2015deepear,chen2014small,variani2014deep}通过按比例缩小深度模型的方法，将深度学习算法缩小后运行在手机或DSP上。使用低功耗处理器也被证明对于连续传感类型的应用特别有效，该类系统诸如Speakersense\cite{lu2011speakersense}、Dsp.ear\cite{georgiev2014dsp}等，它们在应用级进行优化以均衡主处理器和协处理器间的负载。Antoniou等人\cite{antoniou2016general}将深度卷积模型应用在智能监控系统中，分别于PC和移动设备上实现了一款可以自动检测、智能识别的在线监控系统。最后，开发深度学习领域的专用硬件是另外一个当前较为热门的研究方向，许多研究人员对此做出了贡献，如Diannao\cite{chen2014diannao}以及FPGA神经网络加速器\cite{zhang2015optimizing}等。
+除了上述三类研究外，还有一些其他的相关研究。文献\cite{lane2015deepear,chen2014small,variani2014deep}通过按比例缩小深度模型的方法，将深度学习算法缩小后运行在手机或DSP上。使用低功耗处理器也被证明对于连续传感类型的应用特别有效，该类系统诸如Speakersense\cite{lu2011speakersense}、Dsp.ear\cite{georgiev2014dsp}等，它们在应用级进行优化以均衡主处理器和协处理器间的负载。Antoniou等人\cite{antoniou2016general}将深度卷积模型应用在智能监控系统中，分别于PC和移动设备上实现了一款可以自动检测、智能识别的在线监控系统。最后，开发深度学习领域的专用硬件是另外一个当前较为热门的研究方向，许多研究人员对此做出了贡献，如Diannao\cite{chen2014diannao}以及FPGA神经网络加速器\cite{zhang2015optimizing,wang2017dlau,yu2015deep,wang2016solar}等。
 
 可以看出深度学习模型于手机移动端的应用是近两年刚刚兴起并快速升温的研究方向。然而，大量研究学者的关注点都是放在如何提高深度学习模型于移动端的运行速度，而本课题的研究重点更多的是能效的兼顾，并且更多的会考虑能耗问题。
 
@@ -38,13 +38,13 @@ Lane等人\cite{lane2015can}设计了一个基于移动设备CPU和DSP的低功�
 \item 针对需长时期运行的CNN模型应用（Life-logging Apps）,本文通过离线分析其运行时负载特征，并进一步探索在系统层使用动态电压频率调节技术（DVFS）提高该类应用性能或能效的方法。
 \end{enumerate}
 
-通过上述第1、2、3点优化策略，本课题开发出一套可以高能效运行在Android平台的CNN推断时库，并最终将其运用在一个生活日志型应用（如，智能监控系统）中以验证第4点优化策略的有效性。图\ref{figure:figurework}描述了本课题研究内容的整体框架。
+通过上述第1、2、3点优化策略，本课题开发出一套可以高能效运行在Android平台的CNN推断时库，并最终将其运用在一个生活日志型应用（如，智能监控系统）中以验证第4点优化策略的有效性。图\ref{figure:figurework}描述了本课题研究工作的技术路线。
 
 \begin{figure}[htbp]
     \begin{center}
     \includegraphics[width=1.0\textwidth]{figures/work.pdf}
     \end{center}
-    \caption{本文研究内容概览}\label{figure:figurework}
+    \caption{研究工作的技术路线}\label{figure:figurework}
 \end{figure}
 
 \section{论文的组织结构}
@@ -57,7 +57,7 @@ Lane等人\cite{lane2015can}设计了一个基于移动设备CPU和DSP的低功�
 
 第3章首先对卷积神经网络前向推断过程中所使用的基本算子进行了分解，并详细描述了这些算子的作用与原理。然后，分别给出了这些基本算子在手机CPU和手机GPU上的实现方法。接着，描述了基于“剪枝-重训”的权重压缩方法，并使用该方法对卷积神经网络中占存储量主要部分的全连接层权重进行了压缩。对于压缩后的网络，进一步使用稀疏矩阵向量乘（SpMV）代替密集矩阵的内积运算，并分别给出了SpMV的CPU和GPU实现。最后，基于Caffe、YOLO和Tensorflow等深度学习框架所训练的CNN模型权重，在手机端重构LeNet-5\cite{lecun1998gradient}和AlexNet\cite{krizhevsky2012imagenet}模型,并比较分析了基于手机CPU、手机GPU和基于SpMV的实现之间的能效差异。
 
-第4章首先探讨了当前移动端SoC的发展趋势。接着，全面分析了于手机CPU和GPU上分别执行CNN前向推断时的能效，进而阐述了利用所有可获得的手机本地处理器去执行CNN前向推断并非是一种高能效的方式。本文提出一种简单有效的方法，其可以自适应地计算特定移动平台上所有可获得的本地处理器的能效，并进一步通过计算得到一个高能效的设备处理器组合用以并行执行CNN的前向推断过程。最后，本文使用一种基于不同处理器计算性能的方法为所选组合中每一个设备处理器分配计算任务。
+第4章首先探讨了当前移动端SoC的发展趋势。接着，全面分析了于手机CPU和GPU上分别执行CNN前向推断时的能效，进而阐述了利用所有可获得的手机本地处理器去执行CNN前向推断并非是一种高能效的方式。本文提出一种简单有效的方法，其可以自适应地计算特定移动平台上所有可获得的本地处理器的能效，并进一步通过计算得到一个高能效的设备处理器组合用以并行执行CNN的前向推断过程\cite{wang2017rethinking}。最后，本文使用一种基于不同处理器计算性能的方法为所选组合中每一个设备处理器分配计算任务。
 
 第5章首先介绍了动态电压频率调节技术（DVFS）的相关概念，并基于第2、3、4章设计的CNN运行时库开发了一款生活日志型Android应用——智能监控系统。针对该应用，本文从系统层详细分析了其负载特征，并探索了利用DVFS技术进一步提高该类应用性能或能效的方法。
 
