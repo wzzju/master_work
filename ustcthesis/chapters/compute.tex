@@ -16,7 +16,7 @@
 \begin{figure}[htbp]
     \centering
     \includegraphics[height=0.4\textwidth]{figures/yolo_energy.pdf}
-    \caption{手机GPU和CPU执行一次完整CNN推断的运行时间、能耗和平均功耗}\label{figure:figure28}
+    \caption{手机GPU和CPU执行完整CNN推断的运行时间、能耗和平均功耗}\label{figure:figure28}
 \end{figure}
 
 图\ref{figure:figure28}显示了分别于手机GPU和CPU上运行一次完整CNN推断所需时间、能耗和平均功耗。为了充分利用手机CPU的计算性能，在CPU上执行CNN前向推断时使用了ARM处理器提供的NEON指令（一种单指令多数据流）并且启用了与处理器核心数相同的线程。由图\ref{figure:figure28}可知，即使利用了CPU所有的并行处理能力，CPU执行一次完整的CNN前向推断过程仍需要耗时11.94秒、耗能52.12焦。然而，当使用GPU去处理相同的一次推断时，平均运行时间和能耗仅为1.9秒和1.48焦。由此可见，若同时使用手机GPU和CPU并行地执行CNN的前向推断过程，其执行时间肯定会有所降低，但是其能效可能就会很低。原因可以由表\ref{table:table9}所示的EDP能效值得出，其中GPU的推断能效是CPU的221倍。因为手机的电池电量总是有限的，所以手机系统必须为计算过程维持一个较好的执行速度与能耗开销的折中。
