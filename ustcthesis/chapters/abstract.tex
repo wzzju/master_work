@@ -9,7 +9,7 @@
 \item 利用预训练好的卷积神经网络模型权重在手机端重构网络，并使用OpenCL异构编程框架开发基于手机GPU加速的卷积神经网络推断时库。
 \item 基于“剪枝-重训”方法对卷积神经网络模型进行压缩，并在CNN推断时库中引入稀疏矩阵向量乘（SpMV）使得运行时库支持经压缩处理的稀疏CNN模型。
 \item 为了充分利用当前以及未来移动设备SoC所提供的异构计算能力，本文提出了一种使用手机平台异构设备处理器执行CNN推断的能效优化策略。该策略可根据目标平台所配备异构处理器间的能效差异自适应地寻找一个可高能效并行执行CNN推断的设备处理器组合。
-\item 针对基于CNN模型的生活日志型应用，本文详细分析了该类应用的运行时负载特征，并进一步探索在系统层使用动态电压频率调节技术（DVFS）提高该类应用性能或能效的方法。
+\item 针对基于CNN模型的生活日志型应用，本文详细分析了该类应用的运行时负载特征，并进一步提出了在系统层使用动态电压频率调节技术（DVFS）提高该类应用性能或能效的方法。
 \end{enumerate}
 
 本文工作的研究意义主要包括如下三点：
@@ -17,7 +17,7 @@
 \begin{enumerate}
   \item 设计了一套集成离线模型压缩、异构计算任务分配等功能的手机端CNN推断时库。
   \item 提出了基于异构设备处理器并行执行CNN推断的策略，该策略可在运行时主动对目标平台上的异构处理器能效进行评估。
-  \item 探索了从系统层使用DVFS技术优化基于CNN模型的智能新型应用能效的方法。
+  \item 探索了从系统层使用DVFS技术优化基于CNN模型的智能新型应用能效的可能性。
 \end{enumerate}
 
 
@@ -25,23 +25,23 @@
 \end{abstract}
 
 \begin{enabstract}
-During the last few years, Convolutional Neural Networks (CNNs) have been widely used in various domains, such as computer vision and speech recognition, due to their high accuracy and strong self-adaptiveness. On the other hand, mobile phones have become necessary to human beings,and generate a large number of sensor data every day. In order to enable mobile phones to serve people more intelligently, many engineering projects also try to use CNNs to process these sensor data on the mobile phone. However, due to resource limitations (memory, computing power, battery capacity, etc.) of current mobile platforms, CNN-based mobile applications have not become mainstream on mobile platforms.
+In recent years, Convolutional Neural Networks (CNNs) have been widely used in various domains, such as computer vision and speech recognition because of their high accuracy and strong self-adaptiveness. On the other hand, mobile phones have become carry-ons to human beings,and generate a large number of sensor data every day. In order to make mobile phones serve people more intelligently, many engineering projects also try to use CNNs to process these sensor data on the mobile phone. However, due to resource limitations (memory, computing power, battery capacity, etc.) of current mobile platforms, CNN-based mobile applications have not become mainstream on mobile platforms.
 
-Currently, most of CNN-based mobile applications use client-server computing paradigm. But this paradigm not only strongly depends on network performance (such as network stability, etc.) but also leads to the privacy leakage. Therefore, many researchers began to explore how to perform the inference process of convolutional neural networks directly on the mobile platform. For this research topic, this paper proposes a series of optimization strategies and develops a CNN inference library, which can run on the Android platform in an energy-efficient way. Then, this paper uses the inference library to develop a life-logging application for exploring ways to further improve the energy efficiency of such applications. In summary, main contributions of this paper include:
+Currently, most CNN-based mobile applications adopt the client-server computing paradigm. But this paradigm not only depends on network performance (such as network stability) but also leads to privacy leakage. Therefore, many researchers have begun to explore how to perform the inference process of convolutional neural networks directly on the mobile platform. For this research topic, this paper proposes a series of optimization strategies and develops a CNN inference library, which can run on the Android platform in an energy-efficient way. Then, this paper uses the inference library to develop a life-logging application to explore ways to further improve the energy efficiency of such applications. In summary, main contributions of this paper include:
 
 \begin{enumerate}
-  \item Reconstructing the convolutional neural network on the mobile phone by the pre-trained weights. Using the mobile GPU acceleration by the OpenCL framework to develop a CNN inference library.
-  \item Using the pruning-retraining loop to compress the CNN models. Introducing Sparse Matrix-Vector Multiplication (SpMV) into the CNN inference library for enabling the runtime library to support the compressed sparse CNN model.
-  \item To take full advantage of the heterogeneous computing environment provided by current and future mobile device SoCs,  this paper proposes an optimization strategy which can use heterogeneous device processors to execute the CNN inference. Based on the energy efficiency difference among the heterogeneous processors equipped on the target mobile platform, this strategy can adaptively search for an energy-efficient device processor combination to execute the CNN inference in parallel.
-  \item This paper analyzes the runtime load of the CNN-based life-logging application in detail and further explores the method of using Dynamic Voltage and Frequency Scaling (DVFS) to improve the CNN-based application performance or energy efficiency in system level.
+  \item Reconstructing the convolutional neural network on the mobile phone by pre-trained weights. Using the mobile GPU acceleration by the OpenCL framework to develop a CNN inference library.
+  \item Using the pruning-retraining loop to compress CNN models. Introducing Sparse Matrix-Vector Multiplication (SpMV) into the CNN inference library to enable the runtime library to support the compressed sparse CNN model.
+  \item To take full advantage of the heterogeneous computing environment provided by current and future mobile device SoCs, this paper proposes an optimization strategy which can use heterogeneous device processors to execute the CNN inference. Based on the energy efficiency difference among heterogeneous processors equipped on the target mobile platform, this strategy can adaptively find an energy-efficient device processor combination to execute the CNN inference in parallel.
+  \item This paper analyzes the runtime load of the CNN-based life-logging application in detail and further proposes the method of using Dynamic Voltage and Frequency Scaling (DVFS) to improve the CNN-based application performance or energy efficiency in system level.
 \end{enumerate}
 
-The research significance of this paper mainly includes the following three points:
+The contributions of this paper are as follows:
 
 \begin{enumerate}
   \item Designing a mobile CNN inference library that integrates functions such as model compression and heterogeneous computing task assignment.
-  \item Proposing a strategy for parallel execution of CNN inference based on heterogeneous device processors. This strategy can actively evaluate the energy efficiency of heterogeneous processors on a target platform at runtime.
-  \item Exploring the method of using DVFS to improve the CNN-based smart application energy efficiency in system level.
+  \item Proposing a strategy for parallel execution of CNN inference based on heterogeneous device processors. This strategy can automatically evaluate the energy efficiency of heterogeneous processors on a target platform at runtime.
+  \item Exploring the possibility of using DVFS to improve the CNN-based smart application energy efficiency in system level.
 \end{enumerate}
 
 \enkeywords{CNNs; Mobile platform; Energy efficiency;Weights compression; Heterogeneous computing; System-level optimization}
