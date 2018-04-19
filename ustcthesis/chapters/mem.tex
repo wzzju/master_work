@@ -18,9 +18,7 @@
     \caption{矩阵乘法定义}\label{figure:figure8}
 \end{figure}
 
-矩阵乘法操作是全连接层用到的主要基本算子，而且其在本文的卷积层实现中也被涉及，所以在此先介绍矩阵乘法于手机GPU和CPU上的实现。图\ref{figure:figure8}给出了矩阵乘法的定义。
-
-根据定义可得CPU版本的矩阵乘法实现伪代码如下：
+矩阵乘法操作是全连接层用到的主要基本算子，而且其在本文的卷积层实现中也被涉及，所以在此先介绍矩阵乘法于手机GPU和CPU上的实现。图\ref{figure:figure8}给出了矩阵乘法的定义。根据定义可得CPU版本的矩阵乘法实现伪代码如下：
 
 \begin{algorithm}[htbp]
   \small
@@ -118,17 +116,17 @@
   \end{tabular}
 \end{table}
 
-由图\ref{figure:figure9}可知，使用手机GPU实现矩阵乘法可以明显提升运算性能并降低运行时能耗和功耗。对于$512\times1024$矩阵与$1024\times512$矩阵的乘积运算，相较于CPU实现版本，GPU的标量实现形式加速比为16.82。另一方面，通过比较GPU版本矩阵乘法的标量实现形式和向量实现形式，可以发现使用OpenCL的\texttt{float4}向量数据类型可以再获得约2倍的性能提升并可进一步降低运行时能耗。观察图\ref{figure:figure9}显示的平均功耗信息可知，使用手机CPU执行矩阵内积操作的功耗大约是使用手机GPU时的2倍。这也说明了在移动端SoC设计中，手机CPU功耗是高于GPU的。另外，与仅使用GPU标量数据类型相比，使用GPU向量数据类型执行SIMD（单指令多数据流）指令时功耗会略有上升。由表\ref{table:table1}可知，GPU版本矩阵乘法在能效方面远高于CPU版本矩阵乘法，尤其在使用OpenCL向量数据类型实现时GPU版本的能效提升了近两千倍（EDP的定义见\ref{chapter:edp},其值越小说明能效越高）。
+由图\ref{figure:figure9}可知，使用手机GPU实现矩阵乘法可以明显提升运算性能并降低运行时能耗和功耗。对于$512\times1024$矩阵与$1024\times512$矩阵的乘积运算，相较于CPU实现版本，GPU的标量实现形式加速比为16.82。另一方面，通过比较GPU版本矩阵乘法的标量实现形式和向量实现形式，可以发现使用OpenCL的\texttt{float4}向量数据类型可以再获得约2倍的性能提升并可进一步降低运行时能耗。观察图\ref{figure:figure9}显示的平均功耗信息可知，使用手机CPU执行矩阵内积操作的功耗大约是使用手机GPU时的2倍。这也说明了在移动端SoC设计中，手机CPU功耗是高于GPU的。另外，与仅使用GPU标量数据类型相比，使用GPU向量数据类型执行SIMD（单指令多数据流）指令时功耗会略有上升。由表\ref{table:table1}可知，GPU版本矩阵乘法在能效方面远高于CPU版本矩阵乘法，尤其在使用OpenCL向量数据类型实现时GPU版本的能效提升了近两千倍（EDP的定义见\ref{chapter:edp}节,其值越小说明能效越高）。
 
 \subsection{卷积层基本算子}
 
 卷积层的基本算子即为卷积操作，这在第二章进行了相关介绍。然而，为了提高卷积操作的执行性能，本文采用了\texttt{img2col}结合通用矩阵乘的实现方式。
 
-在介绍\texttt{img2col}之前，此处先回顾一下第二章介绍的卷积实现理论细节：卷积核是一个包含权重的小窗口，其在输入图像上按步长滑动，每次滑动会对输入图像上对应的小窗口区域进行操作，即将卷积核中的各个权值与输入图像上对应小窗口中的各个像素值相乘再求和，最后加上偏置得到特征图上的一个输出值。根据上述描述可知，卷积核对输入特征图的每一次运算与两个向量的内积非常类似。因此，卷积操作完全可以转化为矩阵乘法来实现。
+根据第二章介绍的卷积操作可知，每次滑动卷积窗口，都需要将卷积核的每一个权重值与窗口对应处的图像数据值相乘，并将所有的乘积相加求和，整个操作过程非常类似于向量的内积运算。因此，理论上可以使用矩阵乘法实现卷积操作，这便是通过\texttt{img2col}操作实现的。
 
 \begin{figure}[htb]
     \begin{center}
-    \includegraphics[height=0.25\textwidth]{figures/im2col.pdf}
+    \includegraphics[height=0.3\textwidth]{figures/im2col.pdf}
     \end{center}
     \caption{\texttt{img2col}转换三通道输入特征图示例}\label{figure:figure10}
 \end{figure}
@@ -142,20 +140,20 @@
     \KwData{channels, channel\_size, kernel\_h，kernel\_w, output\_h，output\_w}
     channels，channel\_size分别表示输入通道数和一个通道的数据量\;
     kernel\_h，kernel\_w分别表示卷积核的高度和宽度\;
-  output\_h，output\_w分别表示卷积层输出图像的高度和宽度\;
+  output\_h，output\_w分别表示卷积层输出特征图的高度和宽度\;
     \For{channel in 0 ... channels-1} {
         \For{kernel\_row in 0 ... kernel\_h-1} {
             \For{kernel\_col in 0 ... kernel\_w-1} {
-                计算卷积核中第kernel\_row行在输入图像中的第一个操作区域的行索引\;
+                计算卷积核中第kernel\_row行首个操作区域在输入特征图上的行索引\;
                 \For{output\_rows in output\_h ... 1} {
-                    \If{计算得到的输入图像的行值索引小于零或者大于输入图像的高} {
+                    \If{计算得到的输入特征图的行值索引小于零或者大于输入特征图的高} {
                         \For{output\_cols in output\_w ... 1} {
                             将该行在输出矩阵上的位置置为0\;
                         }
                     } \Else {
-                        计算卷积核中的第kernel\_col列在输入图像中的第一个操作区域的列索引\;
-                        \For{output\_col in output\_w ... 1} {
-                            \If{输入图像的列值索引大于等于零或者小于输入图像的宽} {
+                        计算卷积核中第kernel\_col列首个操作区域在输入特征图上的列索引\;
+                        \For{output\_cols in output\_w ... 1} {
+                            \If{输入特征图的列值索引大于等于零或者小于输入特征图的宽} {
                                 将输入特征图上对应的区域放到输出矩阵上;
                             } \Else {
                                 将该行该列在输出矩阵上的位置置为0\;
@@ -202,7 +200,7 @@
 
 \subsection{池化层基本算子}
 
-显然，池化层的基本算子即为池化单元。由第\ref{chapter:chapter2-1-2}章节可知，最大池化是目前研究工作中最为常用的池化单元，因此本文主要实现了最大池化操作。根据第\ref{chapter:chapter2-1-2}章节中对最大池化操作的自然语言描述，可形成如算法\ref{algo:algorithm5}所示的最大池化操作伪代码。同样地，本文于手机GPU和CPU上分别实现了算法\ref{algo:algorithm5}所描述的伪代码。
+显然，池化层的基本算子即为池化单元。由\ref{chapter:chapter2-1-2}节可知，最大池化是目前研究工作中最为常用的池化单元，因此本文主要实现了最大池化操作。根据第\ref{chapter:chapter2-1-2}节中对最大池化操作的自然语言描述，可形成如算法\ref{algo:algorithm5}所示的最大池化操作伪代码。同样地，本文于手机GPU和CPU上分别实现了算法\ref{algo:algorithm5}所描述的伪代码。
 
 \begin{algorithm}[htbp]
   \small
@@ -261,7 +259,9 @@
 %\end{minipage}
 %\end{figure}
 
-对于一张高度和宽度均为256、通道数为100的输入特征图，本文测量了其在ODROID-XU3平台上进行最大池化操作所需的运行时间、能耗和平均功耗。实验中，池化操作的步长取为1、池化核大小取为$3 \times 3$，并且不进行padding处理。测量结果如图\ref{figure:figure12}所示。
+对于一张高度和宽度均为256、通道数为100的输入特征图，本文测量了其在ODROID-XU3平台上进行最大池化操作所需的运行时间、能耗和平均功耗。实验中，池化操作的步长取为1、池化核大小取为$3 \times 3$，并且不进行padding处理，测量结果如图\ref{figure:figure12}所示。
+
+由图\ref{figure:figure12}可知，使用GPU进行最大池化操作不仅可以将运算速度提升12倍还可以把能耗降为使用CPU时的1/28。最大池化在CPU和GPU上执行的功耗特征与\texttt{img2col}类似，即GPU版本最大池化平均功耗不足CPU版本的一半。表\ref{table:table3}从能效的角度分析了最大池化在不同计算设备上的表现，即GPU版本最大池化的能效要高出CPU版本约340余倍。
 
 \begin{figure}[htb]
     \begin{center}
@@ -269,8 +269,6 @@
     \end{center}
     \caption{最大池化不同实现版本的运行时间、能耗和平均功耗对比}\label{figure:figure12}
 \end{figure}
-
-由图\ref{figure:figure12}可知，使用GPU进行最大池化操作不仅可以将运算速度提升12倍还可以把能耗降为使用CPU时的1/28。最大池化在CPU和GPU上执行的功耗特征与\texttt{img2col}类似，即GPU版本最大池化平均功耗不足CPU版本的一半。表\ref{table:table3}从能效的角度分析了最大池化在不同计算设备上的表现，即GPU版本最大池化的能效要高出CPU版本约340余倍。
 
 \begin{table}[htbp]
   \centering
@@ -289,7 +287,7 @@
 
 \subsection{激活层基本算子}
 
-正如第\ref{chapter:chapter2-1-4}章节所述，激活层主要使用非线性激活函数对输入数据进行处理，故而激活层的基本算子即为所使用的激活函数。在具体实现中，可选的激活函数主要有Relu函数、Sigmod函数以及双曲正切函数等。选定激活函数\texttt{activation\_fun()}，激活层基本算子的实现伪代码可表示如下：
+正如\ref{chapter:chapter2-1-4}节所述，激活层主要使用非线性激活函数对输入数据进行处理，故而激活层的基本算子即为所使用的激活函数。在具体实现中，可选的激活函数主要有Relu函数、Sigmod函数以及双曲正切函数等。选定激活函数\texttt{activation\_fun()}，激活层基本算子的实现伪代码可表示如下：
 
 \begin{algorithm}[htbp]
   \small
@@ -377,6 +375,7 @@
 \end{figure}
 
 LeNet-5是由卷积神经网络之父Yan LeCun提出的，其主要用于手写字符的识别与分类。原始的LeNet-5模型主要由2个卷积层、2个池化层、1个全连接层以及1个高斯连接层组成，如图\ref{figure:figure15}所示。本文所采用的LeNet-5模型将最后一层高斯连接层替换为了全连接层，且在MNIST数据集\cite{lecun.com}上的预测精度可达99.1\%。表\ref{table:table5}描述了本文所采用的LeNet-5模型结构中卷积层和全连接层的参数信息。
+
 \vspace{-1.5em}
 \begin{table}[htbp]
   \centering
@@ -397,7 +396,7 @@ LeNet-5是由卷积神经网络之父Yan LeCun提出的，其主要用于手写�
 \end{table}
 \vspace{-0.5em}
 
-利用第\ref{chapter:chapter321}章节的权重解析脚本，可获取到LeNet-5模型各层的权重矩阵。基于这些权重矩阵，本文分别于手机GPU和CPU上重构了LeNet-5模型，图\ref{figure:figure16}显示了LeNet-5模型在ODROID-XU3平台上进行单张图片前向推断所需的运行时间、能耗和平均功耗。由图\ref{figure:figure16}可知，LeNet-5模型在手机GPU上进行前向推断的执行速度是在手机CPU上的11倍以上，并且可以节省120多倍的能耗。根据表\ref{table:table6}显示的LeNet-5模型分别于手机GPU和CPU上运行时EDP值可知，使用手机GPU进行LeNet-5的前向推断可以将能效提升1400倍以上。
+利用\ref{chapter:chapter321}节的权重解析脚本，可获取到LeNet-5模型各层的权重矩阵。基于这些权重矩阵，本文分别于手机GPU和CPU上重构了LeNet-5模型，图\ref{figure:figure16}显示了LeNet-5模型在ODROID-XU3平台上进行单张图片前向推断所需的运行时间、能耗和平均功耗。
 
 \begin{figure}[htbp]
     \centering
@@ -405,7 +404,7 @@ LeNet-5是由卷积神经网络之父Yan LeCun提出的，其主要用于手写�
     \caption{LeNet-5单张图片推断运行时间、能耗和平均功耗对比}\label{figure:figure16}
 \end{figure}
 
-由图\ref{figure:figure16}可知，使用手机GPU执行LeNet-5前向推断的平均功耗仅为0.2413瓦。这与图\ref{figure:figure11}显示的使用手机GPU进行\texttt{im2col}运算时的平均功耗1.511瓦相比，可以发现LeNet-5模型在手机GPU上进行前向推断时并未充分利用GPU的计算性能。这可能是因为LeNet-5模型太小，未能充分发挥GPU的并行计算能力。为了验证这一猜想，本文进一步于手机端重构了AlexNet模型。
+由图\ref{figure:figure16}可知，LeNet-5模型在手机GPU上进行前向推断的执行速度是在手机CPU上的11倍以上，并且可以节省120多倍的能耗。根据表\ref{table:table6}显示的LeNet-5模型分别于手机GPU和CPU上运行时EDP值可知，使用手机GPU进行LeNet-5的前向推断可以将能效提升1400倍以上。
 
 \begin{table}[htbp]
   \centering
@@ -420,6 +419,8 @@ LeNet-5是由卷积神经网络之父Yan LeCun提出的，其主要用于手写�
     \bottomrule
   \end{tabular}
 \end{table}
+
+图\ref{figure:figure16}显示使用手机GPU执行LeNet-5前向推断的平均功耗仅为0.2413瓦。这与图\ref{figure:figure11}显示的使用手机GPU进行\texttt{im2col}运算时的平均功耗1.511瓦相比，可以发现LeNet-5模型在手机GPU上进行前向推断时并未充分利用GPU的计算性能。这可能是因为LeNet-5模型太小，未能充分发挥GPU的并行计算能力。为了验证这一猜想，本文进一步于手机端重构了AlexNet模型。
 
 \subsection{AlexNet模型于手机端的重构}
 

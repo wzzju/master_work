@@ -1,9 +1,9 @@
 %!TEX root =  ../main.tex
 
 \begin{abstract}
-近年来，卷积神经网络（CNNs）因其具有高推断精度和强自适应性而被广泛应用于各种领域，例如：计算机视觉、语音识别等。另一方面，移动手机当前已经成为了人类日常生活中的随身携带之物，并且每天都产生着大量与人类相关的传感数据。为了让手机更加智能地服务于人类，许多工程项目也尝试着在手机端利用卷积神经网络处理这些传感数据。然而，由于受到当前移动平台的资源限制（内存、计算能力、电池容量等），基于CNN模型的应用并没有在手机移动平台上成为主流。
+近年来，卷积神经网络（CNNs）因其高推断精度和强自适应性而被广泛应用于各种领域，例如：计算机视觉、语音识别等。另一方面，移动手机当前已经成为人类日常生活中的随身携带之物，并且每天都产生着大量与人类相关的传感数据。为了让手机更加智能地服务于人类，许多工程项目也尝试着在手机端利用卷积神经网络处理这些传感数据。然而，由于受到当前移动平台的资源限制（内存、计算能力、电池容量等），基于CNN模型的应用在手机移动平台上并不多见。
 
-目前，手机上基于CNN模型的应用绝大部分都是采用“客户端-服务器”模式，但是该模式不仅强依赖于网络性能（如网络稳定性等）而且会导致用户隐私泄露。因此，许多研究学者开始探索如何在手机移动端离线执行卷积神经网络的前向推断过程。针对这一研究课题，本文提出了一系列优化策略并开发出一套可高能效运行在Android平台的卷积神经网络推断时库。然后，本文利用该推断时库开发了一款生活日志型应用，借以探索从系统层进一步提高该类场景应用运行时能效的方法。论文的主要工作包括：
+目前，手机上基于CNN模型的应用绝大部分都是采用“客户端-服务器”模式，但是该模式不仅强依赖于网络性能（如网络稳定性等）而且会导致用户隐私泄露。因此，许多研究学者开始探索如何在手机移动端离线执行卷积神经网络的前向推断过程。针对这一研究课题，本文提出了一系列优化策略并开发出一套可高能效运行在Android平台的卷积神经网络推断时库。然后，本文利用该推断时库开发了一款生活日志型应用，借以探索从系统层进一步提高该类场景应用运行时能效的策略。论文的主要工作包括：
 
 \begin{enumerate}
 \item 利用预训练好的卷积神经网络模型权重在手机端重构网络，并使用OpenCL异构编程框架开发基于手机GPU加速的卷积神经网络推断时库。
@@ -17,7 +17,7 @@
 \begin{enumerate}
   \item 设计了一套集成离线模型压缩、异构计算任务分配等功能的手机端CNN推断时库。
   \item 提出了基于异构设备处理器并行执行CNN推断的策略，该策略可在运行时主动对目标平台上的异构处理器能效进行评估。
-  \item 探索了从系统层使用DVFS技术优化基于CNN模型的智能新型应用能效的可能性。
+  \item 探索了从系统层使用DVFS技术优化基于CNN模型手机智能应用能效的策略。
 \end{enumerate}
 
 
@@ -41,7 +41,7 @@ The contributions of this paper are as follows:
 \begin{enumerate}
   \item Designing a mobile CNN inference library that integrates functions such as model compression and heterogeneous computing task assignment.
   \item Proposing a strategy for parallel execution of CNN inference based on heterogeneous device processors. This strategy can automatically evaluate the energy efficiency of heterogeneous processors on a target platform at runtime.
-  \item Exploring the possibility of using DVFS to improve the CNN-based smart application energy efficiency in system level.
+  \item Exploring strategies of using DVFS to improve the CNN-based smart application energy efficiency in system level.
 \end{enumerate}
 
 \enkeywords{CNNs; Mobile platform; Energy efficiency;Weights compression; Heterogeneous computing; System-level optimization}
