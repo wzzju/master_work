@@ -181,13 +181,26 @@
 
 \textbf{功耗和能耗：}图\ref{figure:figure33}描述了两个策略间功耗开销对比。整体上来看，贪心策略的平均功耗约为5.44瓦而本文所提策略的平均功耗约为1.22瓦。从图\ref{figure:figure33}也可以看出，对于所有层而言，本文所提策略的功耗要远低于贪心策略的功耗。这主要是因为移动设备GPUs在设计时更多地关注低功耗而非高性能。移动GPUs通常拥有着较低的运行频率，例如：\texttt{ARM Mali-T628 MP6} GPU最大运行频率为600MHz而\texttt{Samsung Exynos5422} CPU的最大运行频率可达2GHz\cite{hardkernel.com}。
 
+%\begin{figure}[htbp]
+%\begin{minipage}[b]{.5\linewidth}
+%    \centering
+%    \includegraphics[height=0.75\textwidth]{figures/hc_power.pdf}
+%    \caption{每一层的运行时平均功耗}\label{figure:figure33}
+%\end{minipage}
+%\begin{minipage}[b]{.5\linewidth}
+%    \centering
+%    \includegraphics[height=0.75\textwidth]{figures/hc_energy.pdf}
+%    \caption{每一层的运行时能耗}\label{figure:figure34}
+%\end{minipage}
+%\end{figure}
+
 \begin{figure}[htbp]
     \centering
     \includegraphics[height=0.4\textwidth]{figures/hc_power.pdf}
     \caption{每一层的运行时平均功耗}\label{figure:figure33}
 \end{figure}
 
-在各层的运行时能耗方面，图\ref{figure:figure34}显示了一个与功耗表现类似的趋势，即贪心策略的运行时能耗在各层上都要远高于本文所提出的策略。平均来说，贪心策略的运行时能耗约为6.59焦而本文所提策略的能耗约为1.63焦。因此，本文所提策略通过移除一个较低能效的设备处理器有效地降低了CNN推断时的功耗和能耗。另一方面，从之前的性能分析可知，本文所提策略的推断执行性能损失很小。
+在各层的运行时能耗方面，图\ref{figure:figure34}显示了一个与功耗表现类似的趋势，即贪心策略的运行时能耗在各层上都要远高于本文所提出的策略。平均来说，贪心策略的运行时能耗约为6.59焦，而本文所提策略的能耗约为1.63焦。因此，本文所提策略通过移除一个较低能效的设备处理器有效地降低了CNN推断时的功耗和能耗。另一方面，从之前的性能分析可知，本文所提策略的推断执行性能损失很小。
 
 \begin{figure}[htbp]
     \centering
