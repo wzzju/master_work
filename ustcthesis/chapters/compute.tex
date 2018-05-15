@@ -55,7 +55,7 @@
 \begin{algorithm}[htbp]
   \small
   \SetAlgoLined
-    \begin{spacing}{0.8}
+    \begin{spacing}{0.85}
     \KwIn{(i) CNN模型结构参数和预训练的模型权重矩阵\;
           (ii) 能效阈值$EDP_{TH}$(默认值为1)。}
     \KwOut{所期望的高能效处理器组合$S_{HC}$以及组合中所有处理器的相对性能集合$Perf$。}
@@ -136,14 +136,14 @@
   \label{algo:algorithm9}
 \end{algorithm}
 
-对于同一应用而言，算法\ref{algo:algorithm9}的执行过程只需进行一次，之后其输出的任务分配比例数组可以保存到手机本地以便重复使用。故而，算法\ref{algo:algorithm9}的执行开销几乎可以忽略不计。
+对于同一应用而言，算法\ref{algo:algorithm9}的执行过程只需进行一次，之后其输出的任务分配比例数组可以保存到手机本地以便重复使用。故而，算法\ref{algo:algorithm9}的运行时开销几乎可以忽略不计。
 
 
 \section{实验验证}
 \label{chapter:chapter4-4}
 基于第\ref{chapter:chapter3}章所开发的CNN推断时库，本章进一步实现了所提出的策略并在ODROID-XU3平台上进行了实验验证。为了充分利用CPU的并行计算能力，本章也对第\ref{chapter:chapter3}章所开发的CNN推断时库进行了优化，如在CPU版本的CNN推断过程中使用了ARM处理器提供的NEON指令并且启用了与处理器核心数相同的线程。实验中，本文将CPU和GPU的运行频率保持在某一固定值（如最大运行频率），这样可以消除设备处理器运行频率的变化对实验结果的影响。
 
-如第\ref{chapter:chapter2-5-1}节所述，ODROID-XU3平台上所有可获得的本地设备处理器包括一个CPU设备和两个GPU设备。因此，通过运行算法\ref{algo:algorithm8}和算法\ref{algo:algorithm9}，CNN推断时库会得到一个高能效的设备处理器组合（这里即为ODROID-XU3平台上的两个GPU设备）。另外，实验中所考察的CNN模型主要由9个卷积层和3个全连接层构成，它们的结构参数信息如表\ref{table:table10}所示。为了说明所提策略的有效性，本文将所提策略（\emph{Energy-efficient}）与贪心策略（\emph{Greedy}，即总是试图使用所有可获得的异构设备处理器）进行了对比分析。
+如第\ref{chapter:chapter2-5-1}节所述，ODROID-XU3平台上所有可获得的本地设备处理器包括一个CPU设备和两个GPU设备。因此，通过运行算法\ref{algo:algorithm8}和算法\ref{algo:algorithm9}，CNN推断时库会得到一个高能效的设备处理器组合（这里即为ODROID-XU3平台上的两个GPU设备）。另外，实验中所考察的CNN模型主要由9个卷积层和3个全连接层构成，它们的结构参数信息如表\ref{table:table10}所示。为了说明所提策略的有效性，本文将所提策略（\emph{Our work}）与贪心策略（\emph{Greedy}，即总是试图使用所有可获得的异构设备处理器）进行了对比分析。
 
 \begin{table}[htbp]
   \centering
@@ -208,7 +208,7 @@
     \caption{每一层的运行时能耗}\label{figure:figure34}
 \end{figure}
 
-\textbf{能效：}图\ref{figure:figure35}显示了不同异构计算组合执行一个完整CNN推断过程的四个方面对比，即运行时间、能耗、平均功耗和能效EDP值。\emph{Single GPU}仅使用一个GPU设备处理器执行CNN前向推断而\emph{Energy-efficient}使用由本文所提策略选择的两个GPU设备处理器并行执行CNN推断。\emph{Greedy}则使用所有可获得的设备处理器（包含一个CPU和两个GPU设备处理器）并行执行CNN推断。从柱状图\ref{figure:figure35}可以看出，随着所使用设备处理器数量的增加，CNN推断的执行时间在不断降低，但是能耗和平均功耗随之增加。分析EDP值可知，本文所提出的策略（\emph{Energy-efficient}）拥有着更好的能效，其大约是贪心策略能效的3.67倍。与此同时，本文所提出的策略在推断执行速度上仅降低了9.7\%。
+\textbf{能效：}图\ref{figure:figure35}显示了不同异构计算组合执行一个完整CNN推断过程的四个方面对比，即运行时间、能耗、平均功耗和能效EDP值。\emph{Single GPU}仅使用一个GPU设备处理器执行CNN前向推断而\emph{Our work}使用由本文所提策略选择的两个GPU设备处理器并行执行CNN推断。\emph{Greedy}则使用所有可获得的设备处理器（包含一个CPU和两个GPU设备处理器）并行执行CNN推断。从柱状图\ref{figure:figure35}可以看出，随着所使用设备处理器数量的增加，CNN推断的执行时间在不断降低，而能耗和平均功耗却在逐步升高。分析EDP值可知，本文所提出的策略（\emph{Our work}）拥有着更好的能效，其大约是贪心策略能效的3.67倍。与此同时，本文所提出的策略在推断执行速度上仅降低了9.7\%。
 
 \begin{figure}[htbp]
     \centering
