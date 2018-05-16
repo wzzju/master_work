@@ -181,7 +181,7 @@ Energy Delay Product(EDP)是由Horowitz提出并被用于评估数字电路设�
 
 \noindent 本文中，$E$代表某一计算过程的平均能耗，$T$代表某一计算过程的平均执行时间。很明显，$EDP$是一个值越小越好的度量标准。
 
-除EDP可作为能效度量标准外，性能与功耗之比（Performance per Watt，PPW）、性能与能耗之比（Performance per Joule，PPJ）也经常被研究学者用于评估一个计算过程的执行能效。另一方面，在CNN前向推断过程中，每秒处理图像数据的帧数（Frame per Second，FPS\cite{wang2017building}）经常作为CNN推断执行性能的度量标准。因此，在CNN前向推断过程中，性能与功耗之比可由公式\ref{equation:equationfps}和公式\ref{equation:equationppw}推理得到，而性能与能耗之比可由公式\ref{equation:equationfps}和公式\ref{equation:equationppj}推理得到。三个公式中，$T$代表执行时间，$P$代表平均功耗，$E$代表能耗。
+除EDP可作为能效度量标准外，性能与功耗之比（Performance per Watt，PPW）、性能与能耗之比（Performance per Joule，PPJ）也经常被研究学者用于评估一个计算过程的执行能效。另一方面，在CNN前向推断过程中，每秒处理图像数据的帧数（Frame per Second，FPS\cite{wang2017building}）经常作为CNN推断执行性能的度量标准。因此，在CNN前向推断过程中，性能与功耗之比可由公式\ref{equation:equationfps}和公式\ref{equation:equationppw}推理得到，而性能与能耗之比可由公式\ref{equation:equationfps}和公式\ref{equation:equationppj}推理得到。三个公式中，$T$代表平均执行时间，$P$代表平均功耗，$E$代表平均能耗。
 
 \begin{equation}
      \label{equation:equationfps}
