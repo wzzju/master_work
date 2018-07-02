@@ -165,7 +165,7 @@ OpenCL既支持数据并行操作，也提供完整的任务并行机制。换�
 
 \section{能效度量标准与实验平台}
 \label{chapter:ch2-4}
-本文使用\texttt{Energy Delay Product(EDP)}\cite{horowitz1994low}评估CNN前向推断过程中所涉及操作的执行能效，\ref{chapter:edp}节对$EDP$的概念以及选择原因进行了阐述。由于本文其他章节的实验部分都是基于ODROID-XU3\cite{hardkernel.com}和Open-Q™ 820\cite{intrinsyc.com}两个平台进行的，故而\ref{chapter:chapter2-5-1}节和\ref{chapter:chapter2-5-2}节分别对两个平台进行了详细介绍。
+本文使用Energy Delay Product(EDP)\cite{horowitz1994low}评估CNN前向推断过程中所涉及操作的执行能效，\ref{chapter:edp}节对$EDP$的概念以及选择原因进行了阐述。由于本文其他章节的实验部分都是基于ODROID-XU3\cite{hardkernel.com}和Open-Q™ 820\cite{intrinsyc.com}两个平台进行的，故而\ref{chapter:chapter2-5-1}节和\ref{chapter:chapter2-5-2}节分别对两个平台进行了详细介绍。
 
 \subsection{能效度量标准}
 \label{chapter:edp}
@@ -181,7 +181,7 @@ Energy Delay Product(EDP)是由Horowitz提出并被用于评估数字电路设�
 
 \noindent 本文中，$E$代表某一计算过程的平均能耗，$T$代表某一计算过程的平均执行时间。很明显，$EDP$是一个值越小越好的度量标准。
 
-除EDP可作为能效度量标准外，性能与功耗之比（Performance per Watt，PPW）、性能与能耗之比（Performance per Joule，PPJ）也经常被研究学者用于评估一个计算过程的执行能效。另一方面，在CNN前向推断过程中，每秒处理图像数据的帧数（Frame per Second，FPS\cite{wang2017building}）经常作为CNN推断执行性能的度量标准。因此，在CNN前向推断过程中，性能与功耗之比可由公式\ref{equation:equationfps}和公式\ref{equation:equationppw}推理得到，而性能与能耗之比可由公式\ref{equation:equationfps}和公式\ref{equation:equationppj}推理得到。三个公式中，$T$代表平均执行时间，$P$代表平均功耗，$E$代表平均能耗。
+除$EDP$可作为能效度量标准外，性能与功耗之比（Performance per Watt，PPW）、性能与能耗之比（Performance per Joule，PPJ）也经常被研究学者用于评估一个计算过程的执行能效。另一方面，在CNN前向推断过程中，每秒处理图像数据的帧数（Frame per Second，FPS\cite{wang2017building}）经常作为CNN推断执行性能的度量标准。因此，在CNN前向推断过程中，性能与功耗之比可由公式\ref{equation:equationfps}和公式\ref{equation:equationppw}推理得到，而性能与能耗之比可由公式\ref{equation:equationfps}和公式\ref{equation:equationppj}推理得到。三个公式中，$T$代表平均执行时间，$P$代表平均功耗，$E$代表平均能耗。
 
 \begin{equation}
      \label{equation:equationfps}
@@ -256,6 +256,6 @@ Energy Delay Product(EDP)是由Horowitz提出并被用于评估数字电路设�
 
 \section{本章小结}
 
-本章首先介绍了卷积神经网络的概念和其中一些基本层的含义与作用，这为下一章分解卷积神经网络前向推断过程中的基本算子做足了准备。因为本研究工作中使用“剪枝-重训”方法对卷积神经网络的权重进行压缩，故而本章对深度学习模型训练过程中所使用的反向传播算法进行了详细描述。另外，\ref{chapter:chapteropencl}节对本研究中所使用的异构编程框架OpenCL的基本概念及其具备的三个主要优点进行了介绍，并给出了开发基于OpenCL的异构程序的基本编程流程。最后，本章对研究中所使用的能效评估度量标准以及实验平台进行了详细说明。
+本章首先介绍了卷积神经网络的概念和其中一些基本层的含义与作用，这为下一章分解卷积神经网络前向推断过程中的基本算子做足了准备。因为本研究工作中使用“剪枝-重训”方法对卷积神经网络的权重进行压缩，故而本章对深度学习模型训练过程中所使用的反向传播算法进行了详细描述。另外，\ref{chapter:chapteropencl}节对本研究中所使用的异构编程框架OpenCL的基本概念及其具备的三个主要优点进行了介绍，并给出了开发OpenCL异构程序的基本编程流程。最后，本章对研究中所使用的能效评估度量标准以及实验平台进行了详细说明。
 
 \cleardoublepage 
